@@ -38,6 +38,14 @@
     if(tapBtn){ tapBtn.disabled = true; }
     opening.classList.add('playing');
 
+    // Start the background music when video starts
+    var bgAudio = document.getElementById('bgAudio');
+    if(bgAudio){
+      bgAudio.play().catch(function(err){
+        console.log('Audio autoplay blocked:', err);
+      });
+    }
+
     var revealAfterVideo = function(){ revealSite(); };
     video.addEventListener('ended', revealAfterVideo, { once:true });
     // Fallback in case 'ended' never fires (autoplay block, decode issue, etc.)
