@@ -54,12 +54,17 @@
 
   // opening screen's own music icon just mirrors the main music toggle
   var openingMusicBtn = document.getElementById('openingMusicBtn');
-  if(openingMusicBtn){
+  var mainAudio = document.getElementById('bgAudio');
+  if(openingMusicBtn && mainAudio){
     openingMusicBtn.addEventListener('click', function(e){
       e.stopPropagation();
-      var mainBtn = document.getElementById('musicToggle');
-      if(mainBtn) mainBtn.click();
-      openingMusicBtn.classList.toggle('is-muted');
+      if(mainAudio.paused){
+        mainAudio.play().catch(function(err){ console.log('Audio play failed:', err); });
+        openingMusicBtn.classList.remove('is-muted');
+      } else {
+        mainAudio.pause();
+        openingMusicBtn.classList.add('is-muted');
+      }
     });
   }
 
@@ -256,15 +261,24 @@
   var musicBtn = document.getElementById('musicToggle');
   var audio = document.getElementById('bgAudio');
   var playing = false;
+  
+  // Update playing state when audio actually starts/stops
+  audio.addEventListener('play', function(){ playing = true; });
+  audio.addEventListener('pause', function(){ playing = false; });
+  
   musicBtn.addEventListener('click', function(){
-    if(!audio.src){
-      musicBtn.classList.toggle('muted');
-      musicBtn.setAttribute('aria-pressed', musicBtn.classList.contains('muted') ? 'false':'true');
-      return;
+    if(playing){ 
+      audio.pause(); 
+      musicBtn.classList.add('muted'); 
+      musicBtn.setAttribute('aria-pressed', 'false');
+    } else { 
+      audio.play().then(function(){
+        musicBtn.classList.remove('muted'); 
+        musicBtn.setAttribute('aria-pressed', 'true');
+      }).catch(function(err){
+        console.log('Audio play failed:', err);
+      }); 
     }
-    if(playing){ audio.pause(); playing=false; musicBtn.classList.add('muted'); }
-    else { audio.play().catch(function(){}); playing=true; musicBtn.classList.remove('muted'); }
-    musicBtn.setAttribute('aria-pressed', playing ? 'true':'false');
   });
 
 })();
