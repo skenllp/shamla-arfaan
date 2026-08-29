@@ -27,14 +27,27 @@
     }, 1650);
   }
 
-  function tryPlay(){
-    video.loop = true;
-    var p = video.play();
-    if(p && p.catch){ p.catch(function(){}); }
-  }
-  tryPlay();
+  // Video stays paused on the poster (first) frame until the guest taps in.
+  // It then plays once, and the invitation reveals right after it finishes.
+  video.loop = false;
+  var videoStarted = false;
 
-  if(tapBtn){ tapBtn.addEventListener('click', revealSite); }
+  function playOpeningVideo(){
+    if(videoStarted) return;
+    videoStarted = true;
+    if(tapBtn){ tapBtn.disabled = true; }
+    opening.classList.add('playing');
+
+    var revealAfterVideo = function(){ revealSite(); };
+    video.addEventListener('ended', revealAfterVideo, { once:true });
+    // Fallback in case 'ended' never fires (autoplay block, decode issue, etc.)
+    setTimeout(revealAfterVideo, 9000);
+
+    var p = video.play();
+    if(p && p.catch){ p.catch(function(){ revealAfterVideo(); }); }
+  }
+
+  if(tapBtn){ tapBtn.addEventListener('click', playOpeningVideo); }
 
   // safety: if video errors, still let user in
   video.addEventListener('error', function(){ if(enterPrompt) enterPrompt.classList.add('show'); });
