@@ -54,18 +54,29 @@
 
   // opening screen's own music icon just mirrors the main music toggle
   var openingMusicBtn = document.getElementById('openingMusicBtn');
-  var mainAudio = document.getElementById('bgAudio');
-  if(openingMusicBtn && mainAudio){
+  if(openingMusicBtn){
     openingMusicBtn.addEventListener('click', function(e){
       e.stopPropagation();
-      if(mainAudio.paused){
-        mainAudio.play().catch(function(err){ console.log('Audio play failed:', err); });
-        openingMusicBtn.classList.remove('is-muted');
-      } else {
-        mainAudio.pause();
-        openingMusicBtn.classList.add('is-muted');
+      var mainMusicBtn = document.getElementById('musicToggle');
+      if(mainMusicBtn){
+        mainMusicBtn.click();
       }
     });
+    
+    // Sync visual state with main audio
+    var syncOpeningBtn = function(){
+      var mainAudio = document.getElementById('bgAudio');
+      if(mainAudio && !mainAudio.paused){
+        openingMusicBtn.classList.remove('is-muted');
+      } else {
+        openingMusicBtn.classList.add('is-muted');
+      }
+    };
+    var mainAudio = document.getElementById('bgAudio');
+    if(mainAudio){
+      mainAudio.addEventListener('play', syncOpeningBtn);
+      mainAudio.addEventListener('pause', syncOpeningBtn);
+    }
   }
 
   // ================= SCROLL REVEAL =================
@@ -262,22 +273,32 @@
   var audio = document.getElementById('bgAudio');
   var playing = false;
   
+  // Ensure audio is loaded
+  audio.load();
+  
   // Update playing state when audio actually starts/stops
-  audio.addEventListener('play', function(){ playing = true; });
-  audio.addEventListener('pause', function(){ playing = false; });
+  audio.addEventListener('play', function(){ 
+    playing = true; 
+    musicBtn.classList.remove('muted'); 
+    musicBtn.setAttribute('aria-pressed', 'true');
+  });
+  audio.addEventListener('pause', function(){ 
+    playing = false; 
+    musicBtn.classList.add('muted'); 
+    musicBtn.setAttribute('aria-pressed', 'false');
+  });
   
   musicBtn.addEventListener('click', function(){
     if(playing){ 
       audio.pause(); 
-      musicBtn.classList.add('muted'); 
-      musicBtn.setAttribute('aria-pressed', 'false');
     } else { 
-      audio.play().then(function(){
-        musicBtn.classList.remove('muted'); 
-        musicBtn.setAttribute('aria-pressed', 'true');
-      }).catch(function(err){
-        console.log('Audio play failed:', err);
-      }); 
+      var playPromise = audio.play();
+      if(playPromise !== undefined){
+        playPromise.catch(function(err){
+          console.error('Audio play failed:', err);
+          alert('Unable to play music. Please check your browser settings or try again.');
+        }); 
+      }
     }
   });
 

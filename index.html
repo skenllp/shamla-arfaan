@@ -297,7 +297,9 @@
   <button class="music-btn muted" id="musicToggle" aria-label="Toggle music" aria-pressed="false">
     <div class="bars"><span></span><span></span><span></span></div>
   </button>
-  <audio id="bgAudio" loop preload="none" src="assets/song.mp3"></audio>
+  <audio id="bgAudio" loop preload="auto">
+    <source src="assets/song.mp3" type="audio/mpeg">
+  </audio>
 </div>
 
 <script src="js/main.js"></script>
