@@ -448,6 +448,23 @@
   @media (prefers-reduced-motion: reduce){ .accent-leaf{ animation:none; } }
 
   /* ---------- invitation section ---------- */
+  .bismi-arabic{
+    font-family: 'Amiri', 'Traditional Arabic', serif;
+    font-size: clamp(1.4rem, 5vw, 1.8rem);
+    color: var(--gold-light);
+    margin: 0 0 8px;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+  }
+  .bismi-english{
+    font-family: 'Cinzel', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 6px;
+    line-height: 1.5;
+  }
   #invitation .eyebrow{ margin-bottom:6px; display:block; }
   .call{
     font-family:'EB Garamond', serif;
